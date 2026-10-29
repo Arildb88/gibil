@@ -38,32 +38,17 @@ async function refresh(){
 }
 refresh();setInterval(refresh,5000);
 
-function parseCsvLine(line){
- const values=[];let value='',quoted=false;
- for(let i=0;i<line.length;i++){
-  const c=line[i];
-  if(c==='"'&&quoted&&line[i+1]==='"'){value+='"';i++;}
-  else if(c==='"')quoted=!quoted;
-  else if(c===','&&!quoted){values.push(value);value='';}
-  else value+=c;
- }
- values.push(value);return values;
-}
 async function loadCoordinates(){
- const response=await fetch('https://raw.githubusercontent.com/datasets/airport-codes/master/data/airport-codes.csv');
- if(!response.ok)throw Error('Koordinater utilgjengelige');
- const lines=(await response.text()).split(/\r?\n/);
- const headers=parseCsvLine(lines.shift());
- const codeIndex=headers.indexOf('iata_code'),coordIndex=headers.indexOf('coordinates');
- if(codeIndex<0||coordIndex<0)throw Error('Ukjent koordinatformat');
- for(const line of lines){
-  if(!line)continue;
-  const cells=parseCsvLine(line),code=cells[codeIndex];
-  const pair=(cells[coordIndex]||'').split(',').map(Number);
-  if(!code||pair.length!==2||!pair.every(Number.isFinite))continue;
-  const [lon,lat]=pair;
-  if(lat>=57&&lat<=82&&lon>=4&&lon<=34)positions.set(code,[lat,lon]);
+ const response=await fetch('/api/monitor/airports',{cache:'no-store'});
+ if(!response.ok)throw Error('Kunne ikke hente flyplasskoordinater: HTTP '+response.status);
+ const airports=await response.json();
+ positions.clear();
+ for(const airport of airports){
+  if(Number.isFinite(airport.latitude)&&Number.isFinite(airport.longitude)){
+   positions.set(airport.airportCode,[airport.latitude,airport.longitude]);
+  }
  }
+ document.getElementById('message').textContent='Flyplasser med NeTEx-koordinater: '+positions.size+'. Kartet viser kun flyplasser fra Gibil.';
  await refresh();
 }
 loadCoordinates().catch(e=>document.getElementById('message').textContent=e.message);
