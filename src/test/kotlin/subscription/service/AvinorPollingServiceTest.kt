@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import service.AirportMonitorService
 import service.FlightAggregationService
 import service.serviceJourney.ServiceJourneyResolver
 import siri.SiriETMapper
@@ -35,7 +36,8 @@ class AvinorPollingServiceTest {
             flightStateCache,
             serviceJourneyResolver,
             siriETMapper,
-            subscriptionManager
+            subscriptionManager,
+            AirportMonitorService()
         )
         every { serviceJourneyResolver.resolve(any()) } answers { firstArg() }
         // Shared stubs used in most tests
