@@ -39,7 +39,8 @@ private val LOG = LoggerFactory.getLogger(FlightAggregationService::class.java)
 class FlightAggregationService(
     private val avinorXmlFeedApiHandler: AvinorXmlFeedApiHandler,
     private val xmlHandler: AvinorScheduleXmlHandler,
-    private val ioDispatcher: CoroutineDispatcher
+    private val ioDispatcher: CoroutineDispatcher,
+    private val airportMonitorService: AirportMonitorService
 ) {
 
 
@@ -136,13 +137,15 @@ class FlightAggregationService(
             val xmlResponse = avinorXmlFeedApiHandler.fetchFlights(
                 AvinorXmlFeedParamsLogic(airportCode = airportCode)
             ).getOrElse { e ->
+                airportMonitorService.airportFetchFailed(airportCode)
                 LOG.error("API call failed for {}: {}", airportCode, e.message)
                 return emptyList()
             }
 
             val airport = xmlHandler.unmarshallXmlToAirport(xmlResponse)
-            airport.flightsContainer?.flight ?: emptyList()
+            (airport.flightsContainer?.flight ?: emptyList()).also { airportMonitorService.airportFetched(airportCode) }
         } catch (e: Exception) {
+            airportMonitorService.airportFetchFailed(airportCode)
             LOG.error("Error fetching data for {}: {}", airportCode, e.message)
             emptyList()
         }
