@@ -28,6 +28,7 @@ class AirportQuayServiceTest {
     fun init() {
         mapper = mockk()
         httpClient = mockk()
+        every { mapper.makeIataToCoordinates(any()) } returns emptyMap()
         airportQuayService = AirportQuayService(mapper, httpClient, "https://dummy-url", tempDir.toString(), true)
     }
 
