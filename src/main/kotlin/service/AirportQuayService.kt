@@ -53,8 +53,12 @@ class AirportQuayService(
                 ?: throw RuntimeException("No XML file found in $basePath")
             val stopPlaces = mapper.parseStopPlaceFromFile(file)
             val newMap = mapper.makeIataToQuayMap(stopPlaces)
-            iataToCoordinates = mapper.makeIataToCoordinates(stopPlaces)
-            LOG.info("NeTEx airport coordinates available: {}", iataToCoordinates.size)
+            try {
+                iataToCoordinates = mapper.makeIataToCoordinates(stopPlaces)
+                LOG.info("NeTEx airport coordinates available: {}", iataToCoordinates.size)
+            } catch (e: Exception) {
+                LOG.warn("Airport coordinate extraction failed; quay mapping will still be refreshed: {}", e.message)
+            }
 
             iataToQuayMap = buildMap{
 
