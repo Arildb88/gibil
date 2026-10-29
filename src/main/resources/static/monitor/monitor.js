@@ -33,7 +33,7 @@ async function refresh(){
   const status=(a.fetchStatus||'PENDING').toLowerCase();
   const icon=L.divIcon({className:'',html:'<div class="airport-dot '+status+(a.changedFlights?' changed':'')+'" style="width:13px;height:13px"></div>',iconSize:[17,17]});
   markers[a.airportCode].setIcon(icon);
-  markers[a.airportCode].setPopupContent(a.airportCode+' | '+a.fetchStatus+' | Berørte flyvninger: '+a.changedFlights);
+  markers[a.airportCode].setPopupContent(a.airportCode+' | '+a.fetchStatus+' | Sist hentet: '+fmt(a.lastPollAt)+' | Berørte flyvninger: '+a.changedFlights);
  }
 }
 refresh();setInterval(refresh,5000);
