@@ -9,6 +9,15 @@ let fitted=false;
 const names=new Map();
 function fitAirports(){if(fitted||!positions.size)return;map.fitBounds(L.latLngBounds([...positions.values()]),{padding:[30,30],maxZoom:6});fitted=true;}
 function focusAirport(code){const marker=markers[code];if(!marker)return;map.flyTo(marker.getLatLng(),9,{duration:0.7});marker.openPopup();}
+const homeControl=L.control({position:'topleft'});
+homeControl.onAdd=function(){
+ const button=L.DomUtil.create('button','map-home-button');
+ button.type='button';button.textContent='⌂';button.title='Vis alle flyplasser';button.setAttribute('aria-label','Vis alle flyplasser');
+ L.DomEvent.disableClickPropagation(button);
+ L.DomEvent.on(button,'click',()=>{map.closePopup();if(positions.size)map.flyToBounds(L.latLngBounds([...positions.values()]),{padding:[30,30],maxZoom:6,duration:0.7});});
+ return button;
+};
+homeControl.addTo(map);
 
 const fmt=t=>t?new Date(t).toLocaleString('no-NO'):'Aldri';
 function countdown(){
