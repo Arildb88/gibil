@@ -20,6 +20,7 @@ import routes.avinor.xmlfeed.AvinorXmlFeedParamsLogic
 import org.slf4j.LoggerFactory
 import model.AirportIATA
 import org.springframework.stereotype.Service
+import org.springframework.beans.factory.annotation.Autowired
 import util.DateUtil.parseTime
 import java.time.Duration
 import java.time.Instant
@@ -36,7 +37,7 @@ private val LOG = LoggerFactory.getLogger(FlightAggregationService::class.java)
  * Uses coroutines with batching for concurrent API calls.
  */
 @Service
-class FlightAggregationService(
+class FlightAggregationService @Autowired constructor(
     private val avinorXmlFeedApiHandler: AvinorXmlFeedApiHandler,
     private val xmlHandler: AvinorScheduleXmlHandler,
     private val ioDispatcher: CoroutineDispatcher,
