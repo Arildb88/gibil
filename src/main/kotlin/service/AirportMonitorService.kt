@@ -15,7 +15,8 @@ class AirportMonitorService {
     data class AirportSnapshot(
         val airportCode: String,
         val lastPollAt: Instant?,
-        val changedFlights: Int
+        val changedFlights: Int,
+        val fetchStatus: String = "PENDING"
     )
     data class MonitorSnapshot(
         val lastPollStartedAt: Instant?,
@@ -32,6 +33,10 @@ class AirportMonitorService {
     private val total = AtomicReference<Int?>(null)
     private val changed = AtomicReference(0)
     private val airportChanges = ConcurrentHashMap<String, Int>()
+    private val fetchStatus = ConcurrentHashMap<String, String>()
+
+    fun airportFetched(code: String) { fetchStatus[code] = "OK" }
+    fun airportFetchFailed(code: String) { fetchStatus[code] = "ERROR" }
 
     fun pollStarted() {
         startedAt.set(Instant.now())
@@ -60,7 +65,7 @@ class AirportMonitorService {
         totalFlights = total.get(),
         changedFlights = changed.get(),
         airports = AirportIATA.entries.map { code ->
-            AirportSnapshot(code.name, finishedAt.get(), airportChanges[code.name] ?: 0)
+            AirportSnapshot(code.name, finishedAt.get(), airportChanges[code.name] ?: 0, fetchStatus[code.name] ?: "PENDING")
         }
     )
 }
