@@ -26,6 +26,10 @@ class AirportQuayService(
         ?: if (File(TiamatImportPaths.CLOUD_BASEPATH).exists()) TiamatImportPaths.CLOUD_BASEPATH
         else TiamatImportPaths.LOCAL_BASEPATH
 
+    @Volatile private var iataToCoordinates: Map<String, Pair<Double, Double>> = emptyMap()
+
+    fun getAirportCoordinates(): Map<String, Pair<Double, Double>> = iataToCoordinates
+
     private var iataToQuayMap: Map<String, Map<String, String>> = emptyMap()
 
     @PostConstruct
@@ -49,6 +53,8 @@ class AirportQuayService(
                 ?: throw RuntimeException("No XML file found in $basePath")
             val stopPlaces = mapper.parseStopPlaceFromFile(file)
             val newMap = mapper.makeIataToQuayMap(stopPlaces)
+            iataToCoordinates = mapper.makeIataToCoordinates(stopPlaces)
+            LOG.info("NeTEx airport coordinates available: {}", iataToCoordinates.size)
 
             iataToQuayMap = buildMap{
 
