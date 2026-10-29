@@ -9,6 +9,9 @@ class StopPlace {
     @field:XmlElement(name = "StopPlaceType", namespace = "http://www.netex.org.uk/netex")
     val stopPlaceType: String = ""
 
+    @field:XmlElement(name = "Centroid", namespace = "http://www.netex.org.uk/netex")
+    val centroid: Centroid? = null
+
     @field:XmlElement(name = "quays", namespace = "http://www.netex.org.uk/netex")
     val quays: Quays? = null
 }
