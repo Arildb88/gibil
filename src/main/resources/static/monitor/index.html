@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="no"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gibil Live Monitor</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+body{margin:0;background:#0d1826;color:#e9f2fa;font:15px system-ui,sans-serif}
+header{padding:16px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+h1{font-size:22px;margin:0}#stats{display:flex;gap:18px;flex-wrap:wrap}#stats strong{color:#72d9f7}
+#map{height:calc(100vh - 145px);min-height:450px;background:#162638}
+footer{padding:12px 24px;font-size:13px;color:#b7c6d5}
+.leaflet-popup-content{color:#172334}.airport-dot{border-radius:50%;border:2px solid #fff;box-shadow:0 0 8px #0008}
+.airport-dot.pending{background:#8997a7}.airport-dot.ok{background:#26b87a}.airport-dot.error{background:#e45555}
+.airport-dot.changed{animation:pulse 1.5s infinite}@keyframes pulse{50%{box-shadow:0 0 0 11px #31b8ff44}}
+</style></head><body>
+<header><h1>✈ Gibil Live Monitor</h1><div id="stats" aria-live="polite">Venter på data …</div></header>
+<div id="map" role="region" aria-label="Kart over flyplasser i Norge"></div>
+<footer id="message">Grå = ikke hentet · Grønn = Avinor-kall OK · Rød = feil · Puls = flyvning som berører flyplassen er endret. Koordinater: OurAirports (ekstern datakilde).</footer>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/monitor/monitor.js"></script></body></html>
