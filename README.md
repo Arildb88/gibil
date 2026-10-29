@@ -61,16 +61,16 @@ entur.api.base-url-stop-places=https://api.entur.io/stop-places/v1/read/stop-pla
 
 ## Tech stack
 
-- **Kotlin** on **Java 21** with **Spring Boot 4**
+- **Kotlin** on **Java 25** with **Spring Boot 4**
 - **OkHttp** for API calls, **Kotlinx Coroutines** for concurrent batching
 - **JAXB** for XML marshalling (Avinor, SIRI, NeTEx)
 - **MockK** + **JUnit 5** for testing, **JaCoCo** + **SonarQube** for coverage
-- **Docker** (Alpine + Java 21), **Helm** + **Kubernetes** for deployment
+- **Docker** (Alpine + Java 25), **Helm** + **Kubernetes** for deployment
 - **GitHub Actions** CI/CD: build, SonarQube scan, Docker build/push, deploy to dev/tst/prd
 
 ## Development
 
-Requires **Java 21** and **Maven**.
+Requires **Java 25** and **Maven**.
 
 ```bash
 mvn spring-boot:run   # Run locally
