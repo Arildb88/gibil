@@ -69,6 +69,17 @@ class StopPlaceMapper {
         }.toMap()
     }
 
+    fun makeIataToCoordinates(stopPlaces: StopPlaces): Map<String, Pair<Double, Double>> =
+        stopPlaces.stopPlace.mapNotNull { stop ->
+            val code = stop.quays?.quay?.firstNotNullOfOrNull { isolateIataCode(it) }
+                ?: return@mapNotNull null
+            val location = stop.centroid?.location ?: return@mapNotNull null
+            val lat = location.latitude ?: return@mapNotNull null
+            val lon = location.longitude ?: return@mapNotNull null
+            if (lat !in -90.0..90.0 || lon !in -180.0..180.0) return@mapNotNull null
+            code to (lat to lon)
+        }.toMap()
+
     /**
      * Isolates IATA and removes unwanted prefix to allow for IATA code to be used as key.
      * @param quay Quay, class containing unmarshalled StopPlace data
