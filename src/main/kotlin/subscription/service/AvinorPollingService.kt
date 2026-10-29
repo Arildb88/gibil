@@ -4,6 +4,7 @@ import subscription.repository.FlightStateCache
 import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import service.AirportMonitorService
 import service.FlightAggregationService
 import service.serviceJourney.ServiceJourneyResolver
 import siri.SiriETMapper
@@ -20,7 +21,8 @@ class AvinorPollingService(
     private val flightStateCache: FlightStateCache,
     private val serviceJourneyResolver: ServiceJourneyResolver,
     private val siriETMapper: SiriETMapper,
-    private val subscriptionManager: SubscriptionManager
+    private val subscriptionManager: SubscriptionManager,
+    private val airportMonitorService: AirportMonitorService
 ) {
 
 
@@ -33,6 +35,7 @@ class AvinorPollingService(
     @Scheduled(fixedRate = 120000, initialDelay = 420000)
     fun pollAndPushUpdates() {
         LOG.info("Starting Avinor data poll cycle")
+        airportMonitorService.pollStarted()
         LOG.info("Starting poll cycle. Cache size: {}", flightStateCache.getCacheSize())
 
         try {
@@ -41,6 +44,11 @@ class AvinorPollingService(
             // Cleaning cache before filtering to avoid removing entries that were just added.
             flightStateCache.cleanCache(allFlights.map { flightStateCache.cacheKey(it) }.toSet())
             val changedFlights = flightStateCache.filterChanged(allFlights)
+            airportMonitorService.pollCompleted(
+                allFlights.size,
+                changedFlights.size,
+                changedFlights.flatMap { flight -> flight.stops.map { it.airportCode } }
+            )
 
             if (changedFlights.isNotEmpty()) {
                 LOG.info("Detected {} changed flights out of {}", changedFlights.size, allFlights.size)
@@ -53,6 +61,7 @@ class AvinorPollingService(
                 LOG.debug("No flight changes detected")
             }
         } catch (e: Exception) {
+            airportMonitorService.pollFailed(e)
             LOG.error("Error during poll cycle: ${e.message}", e)
         }
     }
