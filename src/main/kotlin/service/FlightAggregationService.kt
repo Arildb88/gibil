@@ -40,7 +40,7 @@ class FlightAggregationService(
     private val avinorXmlFeedApiHandler: AvinorXmlFeedApiHandler,
     private val xmlHandler: AvinorScheduleXmlHandler,
     private val ioDispatcher: CoroutineDispatcher,
-    private val airportMonitorService: AirportMonitorService
+    private val airportMonitorService: AirportMonitorService = AirportMonitorService()
 ) {
 
 
